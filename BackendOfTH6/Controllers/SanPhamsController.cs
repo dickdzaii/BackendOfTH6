@@ -17,6 +17,7 @@ namespace BackendOfTH6.Controllers
         private Th6Entities db = new Th6Entities();
 
         // GET: api/SanPhams
+        [Route("SanPhams/all")]
         public IQueryable<SanPham> GetSanPham()
         {
             return db.SanPham;
@@ -34,7 +35,7 @@ namespace BackendOfTH6.Controllers
 
             return Ok(sanPham);
         }
-        [Route("by-ma-danh-muc/{id}")]
+        [Route("SanPhams/by-ma-danh-muc/{id}")]
         [ResponseType(typeof(SanPham))]
         public IQueryable<SanPham> GetSanPhamByMaDanhMuc(int id)
         {
@@ -46,29 +47,29 @@ namespace BackendOfTH6.Controllers
 
             return sanPham;
         }
-        [Route("by-name/{ten}")]
-        public SanPham GetSanPhamTen(string ten)
+        [Route("SanPhams/by-name/{ten}")]
+        public IQueryable<SanPham> GetSanPhamTen(string ten)
         {
-            SanPham sanPham = db.SanPham.Where(s=>s.Ten==ten).First();
+           var sanPham = db.SanPham.Where(s=>s.Ten.Contains(ten));
             if (sanPham != null)
                 return sanPham;
             else return null;
         }
-        [Route("by-prices/{min}/{max}")]
+        [Route("SanPhams/by-prices/{min}/{max}")]
         public IQueryable<SanPham> GetGiaMinMax(int min, int max)
         {
             IQueryable<SanPham> sanPham;
             if (min > max) {
-                 sanPham = db.SanPham.Where(s=>s.DonGia<min&&s.DonGia>max);
+                 sanPham = db.SanPham.Where(s=>s.DonGia<=min&&s.DonGia>max);
             }
             else {
-                 sanPham = db.SanPham.Where(s => s.DonGia > min && s.DonGia < max);
+                 sanPham = db.SanPham.Where(s => s.DonGia >= min && s.DonGia <= max);
             }
             if (sanPham != null)
                 return sanPham;
             else return null;
         }
-        [Route("by-price/{gia}")]
+        [Route("SanPhams/by-price/{gia}")]
         public IQueryable<SanPham> GetGia(int gia)
         {
             var sanPham = db.SanPham.Where(s => Math.Abs(s.DonGia.Value-gia) <= 1000000);
@@ -142,6 +143,7 @@ namespace BackendOfTH6.Controllers
         }
 
         // DELETE: api/SanPhams/5
+        [Route("SanPhams/xoa")]
         [ResponseType(typeof(SanPham))]
         public IHttpActionResult DeleteSanPham(string id)
         {
